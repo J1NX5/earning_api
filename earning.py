@@ -20,6 +20,7 @@ class Collector:
     def __init__(self):
         load_dotenv()
         self.api_key = os.getenv('API_KEY')
+        self.api_key_2 = os.getenv('API_KEY_2')
         self.dmo = DBManager()
 
     def get_data_by_symbol(self,symb: str):
@@ -30,49 +31,28 @@ class Collector:
         
 
     def get_earning(self, len_param: int):
-        CSV_URL = f'https://www.alphavantage.co/query?function=EARNINGS_CALENDAR&horizon={str(len_param)}month&apikey={self.api_key}'
+        url = f'https://financialmodelingprep.com/stable/earnings-calendar?apikey={self.api_key_2}'
         with requests.Session() as s:
-            download = s.get(CSV_URL)
-            decoded_content = download.content.decode('utf-8')
-            cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-            my_list = list(cr)
-            for row in my_list:
-                if row[0] != 'symbol':
-                    # At this point ist row[0] = symbol
-                    self.get_earning_estimates(row[0])
-                    #print(row[0])
-                else:
+            e_data = s.get(url).json()
+            for d in range(0,len(e_data)):
+                try:
+                    self.get_earning_report(e_data[d]['symbol'])
+                except Exception as e:
                     pass
+                    print(e)
 
-    def get_earning_estimates(self, symb: str):
-        url = f'https://www.alphavantage.co/query?function=EARNINGS_ESTIMATES&symbol={symb}&apikey={self.api_key}'
+    def get_earning_report(self, symb: str):
+        url = f'https://financialmodelingprep.com/stable/earnings?symbol={symb}&limit=4&apikey={self.api_key_2}'
         with requests.Session() as s:
-            self.dmo._create_estimate_table()
-            # print(s.get(url).json()['estimates'][-1])
-            last_est = s.get(url).json()['estimates'][0]
-            self.dmo.insert_estimate(symb, last_est['date'], last_est['horizon'], last_est['eps_estimate_average'], last_est['eps_estimate_high'], last_est['eps_estimate_low'],
-                    last_est['eps_estimate_analyst_count'], last_est['eps_estimate_average_7_days_ago'],
-                    last_est['eps_estimate_average_30_days_ago'], last_est['eps_estimate_average_60_days_ago'],
-                    last_est['eps_estimate_average_90_days_ago'], last_est['eps_estimate_revision_up_trailing_7_days'],
-                    last_est['eps_estimate_revision_down_trailing_7_days'], last_est['eps_estimate_revision_up_trailing_30_days'],
-                    last_est['eps_estimate_revision_down_trailing_30_days'], last_est['revenue_estimate_average'],
-                    last_est['revenue_estimate_high'], last_est['revenue_estimate_low'], last_est['revenue_estimate_analyst_count'])
+            self.dmo.create_earning_report_table()
+            data = s.get(url).json()
+            for d in range(0,len(data)):
+                self.dmo.insert_earning_report(data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'])
 
 
-
-
-    # def check_news(self, len_param: int):
-    #     CSV_URL = f'https://www.alphavantage.co/query?function=EARNINGS_CALENDAR&horizon={str(len_param)}month&apikey={self.api_key}'
-    #     with requests.Session() as s:
-    #         download = s.get(CSV_URL)
-    #         decoded_content = download.content.decode('utf-8')
-    #         cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-    #         my_list = list(cr)
-    #         for row in my_list:
-    #              print(row)
 
 
 if __name__ == '__main__':
     clltr = Collector()
-    # clltr.get_earning(3)
-    clltr.get_earning_estimates('WLKP')
+    clltr.get_earning(3)
+    # clltr.get_earning_report('AAPL')
