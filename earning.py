@@ -37,53 +37,42 @@ class Collector:
             cr = csv.reader(decoded_content.splitlines(), delimiter=',')
             my_list = list(cr)
             for row in my_list:
-                if row[0] == 'symbol':
-                    pass
+                if row[0] != 'symbol':
+                    # At this point ist row[0] = symbol
+                    self.get_earning_estimates(row[0])
+                    #print(row[0])
                 else:
-                    self.dmo.insert_data(row[0],row[1],row[2],row[3],row[4],row[5], row[6])
-        # logging.info("run get_earning")
-        print("run get_earning")
-    
-    def check_news(self, len_param: int):
-        count = 0
-        CSV_URL = f'https://www.alphavantage.co/query?function=EARNINGS_CALENDAR&horizon={str(len_param)}month&apikey={self.api_key}'
+                    pass
+
+    def get_earning_estimates(self, symb: str):
+        url = f'https://www.alphavantage.co/query?function=EARNINGS_ESTIMATES&symbol={symb}&apikey={self.api_key}'
         with requests.Session() as s:
-            download = s.get(CSV_URL)
-            decoded_content = download.content.decode('utf-8')
-            cr = csv.reader(decoded_content.splitlines(), delimiter=',')
-            my_list = list(cr)
-            for row in my_list:
-                if row[0] == 'symbol':
-                    pass
-                else:
-                    o_row = self.dmo.find_by_symbol_name(row[0], row[1])
-                    if self._check_diff_reportdate(o_row, row):
-                        self.dmo.insert_data(row[0],row[1],row[2],row[3],row[4],row[5], row[6])
-                        count += 1
-                        logging.info("Found something new data")
-            if count == 0:
-                # logging.info("Found no new data")
-                print("Found no new data")
-        # logging.info("run check_news")
-        print("run check_news")
+            self.dmo._create_estimate_table()
+            # print(s.get(url).json()['estimates'][-1])
+            last_est = s.get(url).json()['estimates'][0]
+            self.dmo.insert_estimate(symb, last_est['date'], last_est['horizon'], last_est['eps_estimate_average'], last_est['eps_estimate_high'], last_est['eps_estimate_low'],
+                    last_est['eps_estimate_analyst_count'], last_est['eps_estimate_average_7_days_ago'],
+                    last_est['eps_estimate_average_30_days_ago'], last_est['eps_estimate_average_60_days_ago'],
+                    last_est['eps_estimate_average_90_days_ago'], last_est['eps_estimate_revision_up_trailing_7_days'],
+                    last_est['eps_estimate_revision_down_trailing_7_days'], last_est['eps_estimate_revision_up_trailing_30_days'],
+                    last_est['eps_estimate_revision_down_trailing_30_days'], last_est['revenue_estimate_average'],
+                    last_est['revenue_estimate_high'], last_est['revenue_estimate_low'], last_est['revenue_estimate_analyst_count'])
 
-    def _check_diff_reportdate(self, row_1, row_2) -> bool:
-        # row_1 are the data from the db
-        # row_2 are the new data
-        state = False
-        # if not database there row_1 will be None
-        if row_1 is None:
-            self.get_earning(3)
 
-        # At this point we want to check if reportDate is different
-        # The rows hav different length because the data from the db has id in addition
-        if row_1[3] != row_2[2]:
-            state = True
-        
-        return state
+
+
+    # def check_news(self, len_param: int):
+    #     CSV_URL = f'https://www.alphavantage.co/query?function=EARNINGS_CALENDAR&horizon={str(len_param)}month&apikey={self.api_key}'
+    #     with requests.Session() as s:
+    #         download = s.get(CSV_URL)
+    #         decoded_content = download.content.decode('utf-8')
+    #         cr = csv.reader(decoded_content.splitlines(), delimiter=',')
+    #         my_list = list(cr)
+    #         for row in my_list:
+    #              print(row)
 
 
 if __name__ == '__main__':
     clltr = Collector()
     # clltr.get_earning(3)
-    clltr.check_news(3)
+    clltr.get_earning_estimates('WLKP')
