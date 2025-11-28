@@ -45,7 +45,7 @@ class Collector:
                     tmp_data = self.get_data_by_symbol(e_data[d]['symbol'])
                     print(tmp_data)
                     if tmp_data == None:
-                        self.get_earning_report(e_data[d]['symbol'])
+                        self.get_earning_report(e_data[d]['symbol'], 3)
                     # if len(tmp_data) > 1:
                         # for each
                     # get_earning_report start by the symbol what we give
@@ -56,8 +56,8 @@ class Collector:
                     print(e)
 
 # This function collect much data it os possible
-    def get_earning_report(self, symb: str):
-        url = f'https://financialmodelingprep.com/stable/earnings?symbol={symb}&limit=3&apikey={self.api_key_2}'
+    def get_earning_report(self, symb: str, lim: int):
+        url = f'https://financialmodelingprep.com/stable/earnings?symbol={symb}&limit={lim}&apikey={self.api_key_2}'
         with requests.Session() as s:
             self.dmo.create_earning_report_table()
             data = s.get(url).json()
