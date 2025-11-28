@@ -22,24 +22,25 @@ class DBManager:
                 revenue_actual INTEGER NULL,
                 revenue_estimated INTEGER NULL,
                 last_updated TEXT NOT NULL,
-                call_date TEXT NOT NULL
+                call_date TEXT NOT NULL,
+                active BOOL DEFAULT True
                 );
         ''')
         return self.conn.commit()
     
-    def insert_earning_report(self, symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date):
+    def insert_earning_report(self, symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active):
         cursor = self.conn.cursor()
         cursor.execute('''
             INSERT INTO earnings (symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date)
-            SELECT ?, ?, ?, ?, ?, ?, ?, ?
+            SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?
             WHERE NOT EXISTS (
                 SELECT 1 FROM earnings
                 WHERE symbol = ? AND date = ? AND eps_actual = ? 
                 AND eps_estimated = ? AND revenue_actual = ?
-                AND revenue_estimated = ? AND last_updated = ? AND call_date = ?
+                AND revenue_estimated = ? AND last_updated = ? AND call_date = ? active = ?
             )
-            ''', (  symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date,
-                    symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date  )
+            ''', (  symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active,
+                    symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active  )
         ) 
         return self.conn.commit()
 
