@@ -30,16 +30,16 @@ class DBManager:
     def insert_earning_report(self, symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date):
         cursor = self.conn.cursor()
         cursor.execute('''
-            INSERT INTO earnings (symbol, name, reportDate, fiscalDate, estimate, currency, timeOfTheDay, call_date)
+            INSERT INTO earnings (symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date)
             SELECT ?, ?, ?, ?, ?, ?, ?, ?
             WHERE NOT EXISTS (
                 SELECT 1 FROM earnings
-                WHERE e.symbol = ? AND e.name = ? AND e.reportDate = ? 
-                AND e.fiscalDate = ? AND e.estimate = ? AND e.currency = ? 
-                AND e.timeOfTheDay = ? AND e.call_date = ?
+                WHERE symbol = ? AND date = ? AND eps_actual = ? 
+                AND eps_estimated = ? AND revenue_actual = ?
+                AND revenue_estimated = ? AND last_updated = ? AND call_date = ?
             )
-            ''', (  symbol, name, reportDate, fiscalDate, estimate, currency, timeOfTheDay, call_date,
-                    symbol, name, reportDate, fiscalDate, estimate, currency, timeOfTheDay, call_date  )
+            ''', (  symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date,
+                    symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date  )
         ) 
         return self.conn.commit()
 
