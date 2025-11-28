@@ -42,10 +42,15 @@ class Collector:
                 try:
                     # At this point we have all symbols
                     # We have to decide what is todo
-
+                    tmp_data = self.get_data_by_symbol(e_data[d]['symbol'])
+                    print(tmp_data)
+                    if tmp_data == None:
+                        self.get_earning_report(e_data[d]['symbol'])
+                    # if len(tmp_data) > 1:
+                        # for each
                     # get_earning_report start by the symbol what we give
                     # If we have yesterday make a call we can skip the symbol befor we have to check if any reportDate today
-                    self.get_earning_report(e_data[d]['symbol'])
+                    
                 except Exception as e:
                     pass
                     print(e)

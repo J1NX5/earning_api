@@ -43,7 +43,7 @@ class DBManager:
         ) 
         return self.conn.commit()
 
-    
+    # returns None if nothing found
     def find_by_symbol(self, symbol):
         cursor = self.conn.cursor()
         cursor.execute('''
