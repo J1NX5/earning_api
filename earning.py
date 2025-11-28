@@ -38,8 +38,13 @@ class Collector:
             e_data = s.get(url).json()
             # For each symbol we want to call the report
             for d in range(0,len(e_data)):
-                print(e_data[d]['symbol'])
+                # print(e_data[d]['symbol'])
                 try:
+                    # At this point we have all symbols
+                    # We have to decide what is todo
+
+                    # get_earning_report start by the symbol what we give
+                    # If we have yesterday make a call we can skip the symbol befor we have to check if any reportDate today
                     self.get_earning_report(e_data[d]['symbol'])
                 except Exception as e:
                     pass
@@ -51,10 +56,11 @@ class Collector:
         with requests.Session() as s:
             self.dmo.create_earning_report_table()
             data = s.get(url).json()
+            print(data)
             for d in range(0,len(data)):
                 self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date))
 
-
+# function for updatin data if null in there
 
 
 if __name__ == '__main__':
