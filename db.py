@@ -44,19 +44,35 @@ class DBManager:
         ) 
         return self.conn.commit()
 
+    def update_dataset_by_symbol_date_active(self, symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            UPDATE earnings SET 
+                eps_actual = ?, 
+                eps_estimated = ?, 
+                revenue_actual = ?, 
+                revenue_estimated = ?, 
+                last_updated = ?, 
+                call_date = ?, 
+                active = ?
+            WHERE 
+            symbol = ? AND date = ? AND active = ?;''', 
+            ( eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active, symbol, date, active )
+        )
+        return cursor.fetchone()
+    
+    def check_onwait(self, symbol, date, active: int):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT * FROM earnings WHERE symbol = ? AND date = ? AND active = ?;
+            ''', (symbol, date, active)
+        )
+        return cursor.fetchone()
+
     # returns None if nothing found
     def find_by_symbol(self, symbol):
         cursor = self.conn.cursor()
         cursor.execute('''
-            SELECT * FROM data WHERE symbol = ?;
+            SELECT * FROM earnings WHERE symbol = ?;
         ''', (symbol,))
         return cursor.fetchone()
-    
-    # def update_values(self, symbol, name, reportDate, fiscalDate, estimate, currency, timeOfTheDay):
-    #     cursor = self.conn.cursor()
-    #     cursor.execute('''
-    #         UPDATE data
-    #         SET reportDate = ?, fiscalDate = ?, estimate = ?, currency = ?, timeOfTheDay = ?
-    #         WHERE symbol = ? AND name = ?;
-    #     ''', (reportDate, fiscalDate, estimate, currency, timeOfTheDay, symbol, name))
-    #     return self.conn.commit()

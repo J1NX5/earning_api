@@ -46,7 +46,8 @@ class Collector:
             data = s.get(url).json()
             print(data)
             for d in range(0,len(data)):
-                self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), 1)
+                if self.dmo.find_by_symbol(data[d]['symbol']) == None:
+                    self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), 1)
 
     def get_earning_report_by_range(self, _from: str, _to: str):
             url = f'https://financialmodelingprep.com/stable/earnings-calendar?from={_from}&to={_to}&apikey={self.api_key_2}'
@@ -54,9 +55,20 @@ class Collector:
                 data = s.get(url).json()
                 print(data)
                 for d in range(0,len(data)):
-                    self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), 1)
+                    cow = self.dmo.check_onwait(data[d]['symbol'],data[d]['date'], 1)
+                    if cow == None:
+                        self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), 1)
+                    else:
+                        self.update_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), 1)
 
+    def update_report(self, symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active: int) -> bool:
+        try:
+            self.dmo.update_dataset_by_symbol_date_active(symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, self.current_date, active)
+        except Exception as e:
+            print(f'Error: {e}')
+        return True
 
+    
 
 # function for updatin data if null in there
 
