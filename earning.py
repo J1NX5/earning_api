@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import csv
 import requests
 from db import DBManager
-from datetime import datetime
+from datetime import datetime, timedelta
 # import logging
 
 # logging.basicConfig(
@@ -27,6 +27,10 @@ class Collector:
         self.dmo = DBManager()
         self.dmo.create_earning_report_table()
         self.current_date = datetime.today().strftime('%Y-%m-%d')
+        self.date_format = "%Y-%m-%d"
+        self.current_date_obj = datetime.strptime(self.current_date, self.date_format)
+        self.tmp_yesterday = self.current_date_obj - timedelta(days=1)
+        self.yesterday_date = str(self.tmp_yesterday.strftime('%Y-%m-%d'))
 
     def get_data_by_symbol(self,symb: str):
         fetch_data = self.dmo.find_by_symbol(symb)
@@ -35,6 +39,7 @@ class Collector:
         return fetch_data
 
 # This function collect much data it os possible
+# works
     def get_earning_report(self, symb: str):
         url = f'https://financialmodelingprep.com/stable/earnings?symbol={symb}&apikey={self.api_key_2}'
         with requests.Session() as s:
@@ -60,6 +65,8 @@ if __name__ == '__main__':
     clltr = Collector()
     # For single run by execute: python earning.py
     # clltr.get_earning()
-    # tmp_from = clltr.current_date - datetime.timedelta(days=1)
-    # clltr.get_earning_report_by_range(tmp_from, clltr.current_date)
-    clltr.get_earning_report('AAPL')
+    
+    clltr.get_earning_report_by_range(clltr.yesterday_date, clltr.current_date)
+
+    # it works
+    # clltr.get_earning_report('AAPL')
