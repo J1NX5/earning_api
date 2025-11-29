@@ -23,7 +23,7 @@ class DBManager:
                 revenue_estimated INTEGER NULL,
                 last_updated TEXT NOT NULL,
                 call_date TEXT NOT NULL,
-                active BOOL DEFAULT True
+                active INTEGER DEFAULT 1
                 );
         ''')
         return self.conn.commit()
@@ -31,13 +31,13 @@ class DBManager:
     def insert_earning_report(self, symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active):
         cursor = self.conn.cursor()
         cursor.execute('''
-            INSERT INTO earnings (symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date)
+            INSERT INTO earnings (symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active)
             SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?
             WHERE NOT EXISTS (
                 SELECT 1 FROM earnings
                 WHERE symbol = ? AND date = ? AND eps_actual = ? 
                 AND eps_estimated = ? AND revenue_actual = ?
-                AND revenue_estimated = ? AND last_updated = ? AND call_date = ? active = ?
+                AND revenue_estimated = ? AND last_updated = ? AND call_date = ? AND active = ?
             )
             ''', (  symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active,
                     symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active  )

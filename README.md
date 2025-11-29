@@ -1,5 +1,5 @@
 # Earning API
-- This api collect earning data from alphavantage.
+- Now we test the API from https://financialmodelingprep.com
 - Do registration there to get a api-key.
 
 ## Installation

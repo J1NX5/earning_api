@@ -38,11 +38,10 @@ class Collector:
     def get_earning_report(self, symb: str):
         url = f'https://financialmodelingprep.com/stable/earnings?symbol={symb}&apikey={self.api_key_2}'
         with requests.Session() as s:
-            self.dmo.create_earning_report_table()
             data = s.get(url).json()
             print(data)
             for d in range(0,len(data)):
-                self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date))
+                self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), 1)
 
     def get_earning_report_by_range(self, _from: str, _to: str):
             url = f'https://financialmodelingprep.com/stable/earnings-calendar?from={_from}&to={_to}&apikey={self.api_key_2}'
@@ -50,7 +49,7 @@ class Collector:
                 data = s.get(url).json()
                 print(data)
                 for d in range(0,len(data)):
-                    self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), True)
+                    self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), 1)
 
 
 
@@ -61,6 +60,6 @@ if __name__ == '__main__':
     clltr = Collector()
     # For single run by execute: python earning.py
     # clltr.get_earning()
-    tmp_from = clltr.current_date - datetime.timedelta(days=1)
-    clltr.get_earning_report_by_range(tmp_from, clltr.current_date)
-    # clltr.get_earning_report('AAPL')
+    # tmp_from = clltr.current_date - datetime.timedelta(days=1)
+    # clltr.get_earning_report_by_range(tmp_from, clltr.current_date)
+    clltr.get_earning_report('AAPL')
