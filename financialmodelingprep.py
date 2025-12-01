@@ -33,7 +33,7 @@ class FMP_Collector:
     # A func which get all the earning reports by delay of 1 day
     # The func will called every day by apscheduler in main.py
     def _get_earning_reports_from_to(self, _from: str, _to: str):
-        url = f'https://financialmodelingprep.com/stable/earnings-calendar?from={_from}&to={_to}&apikey={self.api_key_2}'
+        url = f'https://financialmodelingprep.com/stable/earnings-calendar?from={_from}&to={_to}&apikey={self.api_key}'
         with requests.Session() as s:
             data = s.get(url).json()
             for d in range(0,len(data)):
@@ -48,7 +48,6 @@ class FMP_Collector:
                     str(self.current_date), 
                     1
                 )
-
 
     # A func which is similar to the main concept to handle cases
     # In the func is all what is to do every day
