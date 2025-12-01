@@ -34,8 +34,6 @@ class Collector:
 
     def get_data_by_symbol(self,symb: str):
         fetch_data = self.dmo.find_by_symbol(symb)
-        # logging.info(f'search for data from symbol: {symb}')
-        print(f'search for data from symbol: {symb}')
         return fetch_data
 
 # This function collect much data it os possible
@@ -68,17 +66,11 @@ class Collector:
             print(f'Error: {e}')
         return True
 
-    
-
-# function for updatin data if null in there
+    def watch_symbol(self, symbol: str):
+        resp = self.get_data_by_symbol(symbol)
+        return resp
 
 
 if __name__ == '__main__':
     clltr = Collector()
-    # For single run by execute: python earning.py
-    # clltr.get_earning()
-    
     clltr.get_earning_report_by_range(clltr.yesterday_date, clltr.current_date)
-
-    # it works
-    # clltr.get_earning_report('AAPL')

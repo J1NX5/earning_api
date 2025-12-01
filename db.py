@@ -75,4 +75,4 @@ class DBManager:
         cursor.execute('''
             SELECT * FROM earnings WHERE symbol = ?;
         ''', (symbol,))
-        return cursor.fetchone()
+        return cursor.fetchall()

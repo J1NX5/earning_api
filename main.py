@@ -25,11 +25,17 @@ def earning_task():
 
 scheduler = BackgroundScheduler()
 # for testing set hours to minutes
-scheduler.add_job(earning_task, 'interval', minutes=1)
+scheduler.add_job(earning_task, 'interval', hours=1)
 scheduler.start()
 
 @app.get("/api/{symbol}")
 def read_root(symbol):
     clltr = Collector()
     data = clltr.get_data_by_symbol(symbol)
+    return {"data": data}
+
+@app.get("/watch/{symbol}")
+def read_root(symbol):
+    clltr = Collector()
+    data = clltr.watch_symbol(symbol)
     return {"data": data}
