@@ -76,3 +76,9 @@ class DBManager:
             SELECT * FROM earnings WHERE symbol = ?;
         ''', (symbol,))
         return cursor.fetchall()
+    
+
+    def find_symbol_list(self):
+        cursor = self.conn.cursor()
+        cursor.execute('SELECT DISTINCT symbol FROM earnings;')
+        return cursor.fetchall()
