@@ -1,4 +1,4 @@
-from db import DBManager
+from lib.db import DBManager
 
 class Watch:
 

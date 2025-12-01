@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import csv
 import requests
-from db import DBManager
+from lib.db import DBManager
 from datetime import datetime, timedelta
 
 '''

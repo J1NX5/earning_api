@@ -1,8 +1,8 @@
 # from typing import Union
 from fastapi import FastAPI
-from api import Api
-from watch import Watch
-from jobcenter import Jobcenter
+from lib.api import Api
+from lib.watch import Watch
+from lib.jobcenter import Jobcenter
 
 app = FastAPI()
 jc = Jobcenter()
