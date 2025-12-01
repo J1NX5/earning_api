@@ -4,7 +4,7 @@ class DBManager:
     def __init__(self):
         self.db_path: str = "data.db"
         self.conn = self._create_connection(self.db_path)
-        self.create_earning_report_table()
+        self.create_earning_table_for_fmp()
 
     def _create_connection(self, db_file):
         connection = sqlite3.connect(db_file)
@@ -15,7 +15,7 @@ class DBManager:
     def create_earning_table_for_fmp(self):
         cursor = self.conn.cursor()
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS earnings (
+            CREATE TABLE IF NOT EXISTS fmp_table (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 symbol TEXT NOT NULL,
                 date TEXT NOT NULL,
@@ -31,7 +31,7 @@ class DBManager:
         # By setting unique it is not possible to have two entrys with the same symbol and date
         # Only one dataset for one date. date means date of the report
         cursor.execute('''
-            CREATE UNIQUE INDEX IF NOT EXISTS unique_symbol_date ON earnings(symbol, date);
+            CREATE UNIQUE INDEX IF NOT EXISTS unique_symbol_date ON fmp_table(symbol, date);
         ''')
         return self.conn.commit()
 
@@ -50,7 +50,7 @@ class DBManager:
         ):
         cursor = self.conn.cursor()
         cursor.execute('''
-            INSERT OR IGNORE INTO earnings (
+            INSERT OR IGNORE INTO fmp_table(
                 symbol,
                 date,
                 eps_actual,

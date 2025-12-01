@@ -1,25 +1,12 @@
 # from typing import Union
 from fastapi import FastAPI
-from earning import Collector
 from api import Api
 from watch import Watch
-from apscheduler.schedulers.background import BackgroundScheduler
-import subprocess
-
+from jobcenter import Jobcenter
 
 app = FastAPI()
-
-# Define func for adding by schedular
-def get_earning_report_from_fmp():
-    subprocess.run(["python3", "financialmodelingprep.py"])
-    print("get_earning_report_from_fmp is running")
-
-# Define scheduler
-scheduler = BackgroundScheduler()
-
-# Add func and how often it should run
-scheduler.add_job(get_earning_report_from_fmp, 'interval', hours=1)
-scheduler.start()
+jc = Jobcenter()
+jc.start()
 
 # Is actual not implemented
 @app.get("/api/{symbol}")

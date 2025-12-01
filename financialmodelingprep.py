@@ -20,19 +20,21 @@ class FMP_Collector:
         self.dmo = DBManager()
         
         # creating table if not exist here
+        self.dmo.create_earning_table_for_fmp()
+
         self.date_format = "%Y-%m-%d"
         self.date_today = datetime.today().strftime('%Y-%m-%d')
         self.date_yesterday = self._get_date_delta_by_days(1)
 
     def _get_date_delta_by_days(self,day_delay: int) -> str:
         current_date_obj = datetime.strptime(self.date_today, self.date_format)
-        tmp_yesterday = self.current_date_obj - timedelta(days=day_delay)
-        return str(self.tmp_yesterday.strftime('%Y-%m-%d'))
+        tmp_yesterday = current_date_obj - timedelta(days=day_delay)
+        return str(tmp_yesterday.strftime('%Y-%m-%d'))
 
     
     # A func which get all the earning reports by delay of 1 day
     # The func will called every day by apscheduler in main.py
-    def _get_earning_reports_from_to(self, _from: str, _to: str):
+    def _get_earning_reports_from_to(self,_from: str, _to: str):
         url = f'https://financialmodelingprep.com/stable/earnings-calendar?from={_from}&to={_to}&apikey={self.api_key}'
         with requests.Session() as s:
             data = s.get(url).json()
@@ -46,12 +48,12 @@ class FMP_Collector:
                     data[d]['revenueEstimated'], 
                     data[d]['lastUpdated'], 
                     str(self.current_date), 
-                    1
+                    0
                 )
 
     # A func which is similar to the main concept to handle cases
     # In the func is all what is to do every day
-    def job():
+    def job(self):
         self._get_earning_reports_from_to(self.date_yesterday, self.date_today)
 
     # A func which search and insert all historical data from symbols in table
