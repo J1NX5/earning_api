@@ -47,17 +47,21 @@ class Collector:
                 if  tmp_data == None:
                     self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), 1)
 
-    def get_hist_earning_by_symbol(self):
-        # url = f'https://financialmodelingprep.com/stable/earnings?symbol={symb}&apikey={self.api_key_2}'
+    def get_hist_data(self):
         s_in_db = self.dmo.find_symbol_list()
-        print(s_in_db)
-        # with requests.Session() as s:
-        #     data = s.get(url).json()
-        #     print(data)
-        #     for d in range(0,len(data)):
-        #         tmp_data = self.dmo.find_by_symbol(data[d]['symbol'])
-        #         if  tmp_data == None or tmp_data < 4:
-        #             self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), 1)
+        for d in range(0,len(s_in_db)):
+            self._get_hist_earning_by_symbol(s_in_db[d][0])
+
+    def _get_hist_earning_by_symbol(self, symb: str):
+        url = f'https://financialmodelingprep.com/stable/earnings?symbol={symb}&apikey={self.api_key_2}'
+        tmp_data = self.dmo.find_by_symbol(symb)
+        # print(f'Das Symbol:{symb} hat {len(tmp_data)} Datensätze')
+        with requests.Session() as s:
+            data = s.get(url).json()
+            for d in range(0,len(data)):
+                # print(f'Das Symbol:{data[d]['symbol']} hat {len(tmp_data)} Datensätze')
+                if  tmp_data is None or len(tmp_data) < 10:
+                    self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), 1)
 
 
     def get_earning_report_by_range(self, _from: str, _to: str):
@@ -85,5 +89,5 @@ class Collector:
 
 if __name__ == '__main__':
     clltr = Collector()
-    #clltr.get_earning_report_by_range(clltr.yesterday_date, clltr.current_date)
-    clltr.get_hist_earning_by_symbol()
+    clltr.get_earning_report_by_range(clltr.yesterday_date, clltr.current_date)
+    clltr.get_hist_data()

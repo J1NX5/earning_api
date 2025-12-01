@@ -26,21 +26,17 @@ class DBManager:
                 active INTEGER DEFAULT 1
                 );
         ''')
+        cursor.execute('''
+            CREATE UNIQUE INDEX IF NOT EXISTS unique_symbol_date ON earnings(symbol, date);
+        ''')
         return self.conn.commit()
     
     def insert_earning_report(self, symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active):
         cursor = self.conn.cursor()
         cursor.execute('''
-            INSERT INTO earnings (symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active)
-            SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?
-            WHERE NOT EXISTS (
-                SELECT 1 FROM earnings
-                WHERE symbol = ? AND date = ? AND eps_actual = ? 
-                AND eps_estimated = ? AND revenue_actual = ?
-                AND revenue_estimated = ? AND last_updated = ? AND call_date = ? AND active = ?
-            )
-            ''', (  symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active,
-                    symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active  )
+            INSERT OR IGNORE INTO earnings (symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+            ''', (  symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active )
         ) 
         return self.conn.commit()
 
