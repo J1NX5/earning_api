@@ -2,7 +2,7 @@
 from fastapi import FastAPI
 from earning import Collector
 from api import Api
-from watch import watch
+from watch import Watch
 from apscheduler.schedulers.background import BackgroundScheduler
 import subprocess
 
@@ -12,6 +12,7 @@ app = FastAPI()
 # Define func for adding by schedular
 def get_earning_report_from_fmp():
     subprocess.run(["python3", "financialmodelingprep.py"])
+    print("get_earning_report_from_fmp is running")
 
 # Define scheduler
 scheduler = BackgroundScheduler()
