@@ -57,12 +57,24 @@ class Collector:
         tmp_data = self.dmo.find_by_symbol(symb)
         # print(f'Das Symbol:{symb} hat {len(tmp_data)} Datensätze')
         with requests.Session() as s:
-            data = s.get(url).json()
-            for d in range(0,len(data)):
-                # print(f'Das Symbol:{data[d]['symbol']} hat {len(tmp_data)} Datensätze')
-                if  tmp_data is None or len(tmp_data) < 10:
-                    self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), 1)
+            try:
+                data = s.get(url).json()
+                for d in range(0,len(data)):
+                    # print(f'Das Symbol:{data[d]['symbol']} hat {len(tmp_data)} Datensätze')
+                    if  tmp_data is None or len(tmp_data) < 10:
+                        self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), 1)
+            except Exception as e:
+                print(f'Error {e}')
 
+    def _get_earning_by_symbol(self, symb: str):
+        url = f'https://financialmodelingprep.com/stable/earnings?symbol={symb}&apikey={self.api_key_2}'
+        with requests.Session() as s:
+            try:
+                data = s.get(url).json()
+                for d in range(0,len(data)):
+                    self.dmo.insert_earning_report( data[d]['symbol'],data[d]['date'],data[d]['epsActual'],data[d]['epsEstimated'],data[d]['revenueActual'], data[d]['revenueEstimated'], data[d]['lastUpdated'], str(self.current_date), 1)
+            except Exception as e:
+                print(f'Error {e}')
 
     def get_earning_report_by_range(self, _from: str, _to: str):
             url = f'https://financialmodelingprep.com/stable/earnings-calendar?from={_from}&to={_to}&apikey={self.api_key_2}'
@@ -84,8 +96,10 @@ class Collector:
         return True
 
     def watch_symbol(self, symbol: str):
-        resp = self.get_data_by_symbol(symbol)
-        return resp
+        try:
+            self._get_earning_by_symbol(symbol)
+        except Exception as e:
+            return e
 
 if __name__ == '__main__':
     clltr = Collector()
