@@ -12,7 +12,6 @@ The api is restricted in free version. 250 Calls per day and not all symbols
 The collector only get the current earning reports and controll the data if not complete
 '''
 
-
 class FMP_Collector:
 
     def __init__(self):

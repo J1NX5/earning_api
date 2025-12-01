@@ -50,7 +50,17 @@ class DBManager:
         ):
         cursor = self.conn.cursor()
         cursor.execute('''
-            INSERT OR IGNORE INTO earnings (symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active)
+            INSERT OR IGNORE INTO earnings (
+                symbol,
+                date,
+                eps_actual,
+                eps_estimated, 
+                revenue_actual,
+                revenue_estimated,
+                last_updated,
+                call_date,
+                active
+            )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
             ''', (  symbol, date, eps_actual, eps_estimated, revenue_actual, revenue_estimated, last_updated, call_date, active )
         ) 
