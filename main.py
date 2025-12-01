@@ -10,18 +10,17 @@ import subprocess
 app = FastAPI()
 
 # Define func for adding by schedular
-def get_earning_report_fmp():
+def get_earning_report_from_fmp():
     subprocess.run(["python3", "financialmodelingprep.py"])
 
 # Define scheduler
 scheduler = BackgroundScheduler()
 
 # Add func and how often it should run
-scheduler.add_job(get_earning_report_fmp, 'interval', hours=1)
+scheduler.add_job(get_earning_report_from_fmp, 'interval', hours=1)
 scheduler.start()
 
-
-
+# Is actual not implemented
 @app.get("/api/{symbol}")
 def read_root(symbol):
     _api = Api()
