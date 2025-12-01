@@ -1,41 +1,33 @@
 # from typing import Union
 from fastapi import FastAPI
 from earning import Collector
+from api import Api
+from watch import watch
 from apscheduler.schedulers.background import BackgroundScheduler
 import subprocess
-# import logging
 
-# logging.basicConfig(
-#     filename="app.log",
-#     encoding="utf-8",
-#     filemode="a",
-#     format="{asctime} - {levelname} - {message}",
-#     style="{",
-#     datefmt="%Y-%m-%d %H:%M",
-#     level=logging.INFO,
-# )
 
 app = FastAPI()
 
-# This is a function to run the earning script and will call by scheduler
-def earning_task():
-    print("Start run earning.py")
-    subprocess.run(["python3", "earning.py"])
-    print("earning.py processed successfully.")
+# Define func for adding by schedular
+def get_earning_report_fmp():
+    subprocess.run(["python3", "financialmodelingprep.py"])
 
+# Define scheduler
 scheduler = BackgroundScheduler()
-# for testing set hours to minutes
-scheduler.add_job(earning_task, 'interval', hours=1)
+
+# Add func and how often it should run
+scheduler.add_job(get_earning_report_fmp, 'interval', hours=1)
 scheduler.start()
+
+
 
 @app.get("/api/{symbol}")
 def read_root(symbol):
-    clltr = Collector()
-    data = clltr.get_data_by_symbol(symbol)
+    _api = Api()
     return {"data": data}
 
 @app.get("/watch/{symbol}")
 def read_root(symbol):
-    clltr = Collector()
-    data = clltr.watch_symbol(symbol)
+    _watch = Watch()
     return {"data": data}

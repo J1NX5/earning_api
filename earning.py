@@ -4,17 +4,6 @@ import csv
 import requests
 from db import DBManager
 from datetime import datetime, timedelta
-# import logging
-
-# logging.basicConfig(
-#     filename="app.log",
-#     encoding="utf-8",
-#     filemode="a",
-#     format="{asctime} - {levelname} - {message}",
-#     style="{",
-#     datefmt="%Y-%m-%d %H:%M",
-#     level=logging.INFO,
-# )
 
 # AAPLE, LH
 
@@ -32,12 +21,11 @@ class Collector:
         self.tmp_yesterday = self.current_date_obj - timedelta(days=1)
         self.yesterday_date = str(self.tmp_yesterday.strftime('%Y-%m-%d'))
 
+
     def get_data_by_symbol(self,symb: str):
         fetch_data = self.dmo.find_by_symbol(symb)
         return fetch_data
 
-# This function collect much data it os possible
-# works
     def get_data_from_ec(self):
         url = f'https://financialmodelingprep.com/stable/earnings-calendar?apikey={self.api_key_2}'
         with requests.Session() as s:
@@ -66,8 +54,8 @@ class Collector:
             except Exception as e:
                 print(f'Error {e}')
 
-    def _get_earning_by_symbol(self, symb: str):
-        url = f'https://financialmodelingprep.com/stable/earnings?symbol={symb}&apikey={self.api_key_2}'
+    def _get_earning_by_symbol_from_watch(self, symb: str):
+        url = f'https://financialmodelingprep.com/stable/earnings?symbol={symb}&limit=5&apikey={self.api_key_2}'
         with requests.Session() as s:
             try:
                 data = s.get(url).json()

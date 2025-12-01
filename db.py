@@ -10,7 +10,9 @@ class DBManager:
         connection = sqlite3.connect(db_file)
         return connection
     
-    def create_earning_report_table(self):
+    # In this section are the functions for financialmodelingprep
+
+    def create_earning_table_fmp(self):
         cursor = self.conn.cursor()
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS earnings (
@@ -23,7 +25,7 @@ class DBManager:
                 revenue_estimated INTEGER NULL,
                 last_updated TEXT NOT NULL,
                 call_date TEXT NOT NULL,
-                active INTEGER DEFAULT 1
+                active INTEGER DEFAULT 0
                 );
         ''')
         cursor.execute('''
